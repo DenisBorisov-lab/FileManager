@@ -78,12 +78,17 @@ public class PanelController implements Initializable {
         table.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getClickCount() == 2) {
-                    Path path = Paths.get(pathName.getText()).resolve(table.getSelectionModel().getSelectedItem().getFileName());
-                    if (Files.isDirectory(path)) {
-                        collectList(path);
+                try{
+                    if (event.getClickCount() == 2) {
+                        Path path = Paths.get(pathName.getText()).resolve(table.getSelectionModel().getSelectedItem().getFileName());
+                        if (Files.isDirectory(path)) {
+                            collectList(path);
+                        }
                     }
+                }catch (Exception ex){
+
                 }
+
             }
         });
 
@@ -141,11 +146,11 @@ public class PanelController implements Initializable {
         } else if (item >= 1024 && item < Math.pow(2, 20)) {
             text = String.format("%d Кб", item / 1024);
         } else if (item >= Math.pow(2, 20) && item < Math.pow(2, 30)) {
-            text = String.format("%d Мб", item / (Math.pow(2, 20)));
+            text = String.format("%f Мб", item / (Math.pow(2, 20)));
         } else if (item >= Math.pow(2, 30) && item < Math.pow(2, 40)) {
-            text = String.format("%d Гб", item / (Math.pow(2, 30)));
+            text = String.format("%f Гб", item / (Math.pow(2, 30)));
         } else if (item >= Math.pow(2, 40) && item < Math.pow(2, 50)) {
-            text = String.format("%d Тб", item / (Math.pow(2, 40)));
+            text = String.format("%f Тб", item / (Math.pow(2, 40)));
         }
         return text;
     }

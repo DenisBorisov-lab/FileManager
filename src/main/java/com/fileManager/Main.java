@@ -14,7 +14,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
         primaryStage.setTitle("File manager");
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/zip.png")));
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/file.png")));
         primaryStage.setScene(new Scene(root, 1280, 600));
         primaryStage.show();
     }

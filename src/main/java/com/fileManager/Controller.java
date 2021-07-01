@@ -7,12 +7,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
 public class Controller {
     @FXML
@@ -34,11 +34,11 @@ public class Controller {
 
         PanelController from = null;
         PanelController to = null;
-        if (leftPanelController.getSelectedFile() != null){
+        if (leftPanelController.getSelectedFile() != null) {
             from = leftPanelController;
             to = rightPanelController;
         }
-        if (rightPanelController.getSelectedFile() != null){
+        if (rightPanelController.getSelectedFile() != null) {
             from = rightPanelController;
             to = leftPanelController;
         }
@@ -47,7 +47,7 @@ public class Controller {
         Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
 
         try {
-            Files.copy(pathFrom,pathTo);
+            Files.copy(pathFrom, pathTo);
             to.collectList(Paths.get(to.getPath()));
             from.collectList(Paths.get(from.getPath()));
         } catch (IOException e) {
@@ -64,25 +64,36 @@ public class Controller {
 
         alert(leftPanelController, rightPanelController);
         PanelController target = null;
+        PanelController another = null;
 
-        if (leftPanelController.getSelectedFile() != null){
+        if (leftPanelController.getSelectedFile() != null) {
             target = leftPanelController;
+            another = rightPanelController;
         }
-        if (rightPanelController.getSelectedFile() != null){
+        if (rightPanelController.getSelectedFile() != null) {
             target = rightPanelController;
+            another = leftPanelController;
         }
         Path path = Paths.get(target.getPath(), target.getSelectedFile());
         try {
-            Files.delete(path);
+            if (Files.isDirectory(path)){
+                Files.walk(path)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }else{
+                Files.delete(path);
+            }
             target.collectList(Paths.get(target.getPath()));
+            another.collectList(Paths.get(another.getPath()));
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can't delete " + path.getFileName(), ButtonType.OK);
             alert.showAndWait();
         }
     }
 
-    public void alert(PanelController leftPanelController, PanelController rightPanelController){
-        if (leftPanelController.getSelectedFile() == null && rightPanelController.getSelectedFile() == null){
+    public void alert(PanelController leftPanelController, PanelController rightPanelController) {
+        if (leftPanelController.getSelectedFile() == null && rightPanelController.getSelectedFile() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No selected files", ButtonType.OK);
             alert.showAndWait();
             return;
@@ -98,18 +109,18 @@ public class Controller {
         PanelController from = null;
         PanelController to = null;
 
-        if (leftPanelController.getSelectedFile() != null){
+        if (leftPanelController.getSelectedFile() != null) {
             from = leftPanelController;
             to = rightPanelController;
         }
-        if (rightPanelController.getSelectedFile() != null){
+        if (rightPanelController.getSelectedFile() != null) {
             from = rightPanelController;
             to = leftPanelController;
         }
         Path pathFrom = Paths.get(from.getPath(), from.getSelectedFile());
         Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
         try {
-            Files.move(pathFrom,pathTo);
+            Files.move(pathFrom, pathTo);
             to.collectList(Paths.get(to.getPath()));
             from.collectList(Paths.get(from.getPath()));
         } catch (IOException e) {
