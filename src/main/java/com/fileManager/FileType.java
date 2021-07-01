@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum FileType {
 
-    DIRECTORY("dir"),
+    DIRECTORY("DIR"),
     FILE("file");
 
     private String name;

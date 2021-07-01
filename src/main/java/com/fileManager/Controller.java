@@ -1,63 +1,121 @@
 package com.fileManager;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Controller implements Initializable {
+public class Controller {
     @FXML
-    TableView<FileInformation> table;
+    VBox left;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        TableColumn<FileInformation, String> filenameColumn = new TableColumn<>("Name");
-        filenameColumn.setCellValueFactory(s -> new SimpleStringProperty(s.getValue().getFileName()));
-        filenameColumn.setPrefWidth(240);
+    @FXML
+    VBox right;
 
-        TableColumn<FileInformation, String> fileTypeColumn = new TableColumn<>("Type");
-        filenameColumn.setCellValueFactory(s -> new SimpleStringProperty(s.getValue().getType().toString()));
-        filenameColumn.setPrefWidth(24);
-
-        table.getColumns().addAll(filenameColumn, fileTypeColumn);
-    }
-
-    public void CollectList(Path path) {
-
-
-        try {
-            table.getItems().clear();
-            table.getItems().addAll(Files.list(path)
-                    .map(FileInformation::new)
-                    .collect(Collectors.toList()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-    public static FileInformation test(Path path){
-        try {
-            return new FileInformation(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public void exitAction(ActionEvent actionEvent) {
         Platform.exit();
+    }
+
+    public void copy(ActionEvent actionEvent) {
+        PanelController leftPanelController = (PanelController) left.getProperties().get("ctrl");
+        PanelController rightPanelController = (PanelController) right.getProperties().get("ctrl");
+
+        alert(leftPanelController, rightPanelController);
+
+        PanelController from = null;
+        PanelController to = null;
+        if (leftPanelController.getSelectedFile() != null){
+            from = leftPanelController;
+            to = rightPanelController;
+        }
+        if (rightPanelController.getSelectedFile() != null){
+            from = rightPanelController;
+            to = leftPanelController;
+        }
+
+        Path pathFrom = Paths.get(from.getPath(), from.getSelectedFile());
+        Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
+
+        try {
+            Files.copy(pathFrom,pathTo);
+            to.collectList(Paths.get(to.getPath()));
+            from.collectList(Paths.get(from.getPath()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Can't copy " + pathFrom.getFileName(), ButtonType.OK);
+            alert.showAndWait();
+        }
+
+    }
+
+    public void delete(ActionEvent actionEvent) {
+
+        PanelController leftPanelController = (PanelController) left.getProperties().get("ctrl");
+        PanelController rightPanelController = (PanelController) right.getProperties().get("ctrl");
+
+        alert(leftPanelController, rightPanelController);
+        PanelController target = null;
+
+        if (leftPanelController.getSelectedFile() != null){
+            target = leftPanelController;
+        }
+        if (rightPanelController.getSelectedFile() != null){
+            target = rightPanelController;
+        }
+        Path path = Paths.get(target.getPath(), target.getSelectedFile());
+        try {
+            Files.delete(path);
+            target.collectList(Paths.get(target.getPath()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Can't delete " + path.getFileName(), ButtonType.OK);
+            alert.showAndWait();
+        }
+    }
+
+    public void alert(PanelController leftPanelController, PanelController rightPanelController){
+        if (leftPanelController.getSelectedFile() == null && rightPanelController.getSelectedFile() == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No selected files", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+    }
+
+    public void move(ActionEvent actionEvent) {
+        PanelController leftPanelController = (PanelController) left.getProperties().get("ctrl");
+        PanelController rightPanelController = (PanelController) right.getProperties().get("ctrl");
+
+        alert(leftPanelController, rightPanelController);
+
+        PanelController from = null;
+        PanelController to = null;
+
+        if (leftPanelController.getSelectedFile() != null){
+            from = leftPanelController;
+            to = rightPanelController;
+        }
+        if (rightPanelController.getSelectedFile() != null){
+            from = rightPanelController;
+            to = leftPanelController;
+        }
+        Path pathFrom = Paths.get(from.getPath(), from.getSelectedFile());
+        Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
+        try {
+            Files.move(pathFrom,pathTo);
+            to.collectList(Paths.get(to.getPath()));
+            from.collectList(Paths.get(from.getPath()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Can't move " + pathFrom.getFileName(), ButtonType.OK);
+            alert.showAndWait();
+        }
     }
 
 

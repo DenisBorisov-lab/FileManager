@@ -14,15 +14,15 @@ import java.time.ZoneOffset;
 public class FileInformation {
     private String fileName;
     private long value;
-    private FileType type;
+    private String type;
     private LocalDateTime lastModified;
 
-    public FileInformation(Path path) throws IOException {
+    public FileInformation(Path path) {
 
         try {
             this.fileName = path.getFileName().toString();
             this.value = Files.size(path);
-            this.type = Files.isDirectory(path) ? FileType.DIRECTORY : FileType.FILE;
+            this.type = Files.isDirectory(path) ? FileType.DIRECTORY.getName() : getType(fileName).toUpperCase();
             if (type.equals(FileType.DIRECTORY.getName())){
                 this.value = -1;
             }
