@@ -7,8 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,7 +46,11 @@ public class Controller {
         Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
 
         try {
-            Files.copy(pathFrom, pathTo);
+            if (!Files.isDirectory(pathFrom)) {
+                Files.copy(pathFrom, pathTo);
+            } else {
+                copyDirectory(pathFrom.toFile(), pathTo.toFile());
+            }
             to.collectList(Paths.get(to.getPath()));
             from.collectList(Paths.get(from.getPath()));
         } catch (IOException e) {
@@ -76,12 +79,12 @@ public class Controller {
         }
         Path path = Paths.get(target.getPath(), target.getSelectedFile());
         try {
-            if (Files.isDirectory(path)){
+            if (Files.isDirectory(path)) {
                 Files.walk(path)
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-            }else{
+            } else {
                 Files.delete(path);
             }
             target.collectList(Paths.get(target.getPath()));
@@ -120,12 +123,50 @@ public class Controller {
         Path pathFrom = Paths.get(from.getPath(), from.getSelectedFile());
         Path pathTo = Paths.get(to.getPath()).resolve(pathFrom.getFileName().toString());
         try {
-            Files.move(pathFrom, pathTo);
+            if (!Files.isDirectory(pathFrom)) {
+                Files.move(pathFrom, pathTo);
+            } else {
+                copyDirectory(pathFrom.toFile(), pathTo.toFile());
+                Files.walk(pathFrom)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+
+            }
             to.collectList(Paths.get(to.getPath()));
             from.collectList(Paths.get(from.getPath()));
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can't move " + pathFrom.getFileName(), ButtonType.OK);
             alert.showAndWait();
+        }
+    }
+
+    public void copyDirectory(File sourceLocation, File targetLocation)
+            throws IOException {
+
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists()) {
+                targetLocation.mkdir();
+            }
+
+            String[] children = sourceLocation.list();
+            for (int i = 0; i < children.length; i++) {
+                copyDirectory(new File(sourceLocation, children[i]),
+                        new File(targetLocation, children[i]));
+            }
+        } else {
+
+            InputStream in = new FileInputStream(sourceLocation);
+            OutputStream out = new FileOutputStream(targetLocation);
+
+            // Copy the bits from instream to outstream
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
         }
     }
 

@@ -78,19 +78,20 @@ public class PanelController implements Initializable {
         table.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                try{
+                try {
                     if (event.getClickCount() == 2) {
                         Path path = Paths.get(pathName.getText()).resolve(table.getSelectionModel().getSelectedItem().getFileName());
                         if (Files.isDirectory(path)) {
                             collectList(path);
                         }
                     }
-                }catch (Exception ex){
+                } catch (Exception ex) {
 
                 }
 
             }
         });
+
 
         collectList(Paths.get("C:"));
 

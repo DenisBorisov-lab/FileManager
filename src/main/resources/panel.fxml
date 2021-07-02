@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="com.fileManager.PanelController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" alignment="center" xmlns="http://javafx.com/javafx/11.0.1"
+      fx:controller="com.fileManager.PanelController">
 
     <HBox>
         <ComboBox fx:id="diskBox" onAction="#diskSelection"/>
-        <TextField fx:id="pathName" editable="false" HBox.hgrow="ALWAYS" />
-        <Button text="Вверх"  onAction="#upAction"/>
+        <TextField fx:id="pathName" editable="false" HBox.hgrow="ALWAYS"/>
+        <Button text="Вверх" onAction="#upAction"/>
     </HBox>
-    <TableView fx:id="table" VBox.vgrow="ALWAYS" />
+    <TableView fx:id="table" VBox.vgrow="ALWAYS"/>
 
     <properties>
         <ctrl>
             <fx:reference source="controller"/>
         </ctrl>
     </properties>
+
 
 </VBox>

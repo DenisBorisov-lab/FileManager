@@ -23,7 +23,7 @@ public class FileInformation {
             this.fileName = path.getFileName().toString();
             this.value = Files.size(path);
             this.type = Files.isDirectory(path) ? FileType.DIRECTORY.getName() : getType(fileName).toUpperCase();
-            if (type.equals(FileType.DIRECTORY.getName())){
+            if (type.equals(FileType.DIRECTORY.getName())) {
                 this.value = -1;
             }
             this.lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.ofHours(0));
@@ -32,9 +32,10 @@ public class FileInformation {
         }
 
     }
-    public static String getType(String fileName){
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".")+1);
+
+    public static String getType(String fileName) {
+        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
         else return "";
     }
 }
