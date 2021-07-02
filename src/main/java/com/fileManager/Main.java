@@ -15,7 +15,9 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
         primaryStage.setTitle("File manager");
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/file.png")));
-        primaryStage.setScene(new Scene(root, 1280, 600));
+        primaryStage.setScene(new Scene(root));
+        primaryStage.minWidthProperty();
+        primaryStage.minHeightProperty();
         primaryStage.show();
     }
 

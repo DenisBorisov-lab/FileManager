@@ -41,7 +41,7 @@ public class PanelController implements Initializable {
 
         TableColumn<FileInformation, Long> fileSizeColumn = new TableColumn<>("Size");
         fileSizeColumn.setCellValueFactory(s -> new SimpleObjectProperty<>(s.getValue().getValue()));
-        fileSizeColumn.setPrefWidth(120);
+        fileSizeColumn.setPrefWidth(100);
         fileSizeColumn.setCellFactory(s -> {
             return new TableCell<FileInformation, Long>() {
                 @Override
@@ -64,7 +64,7 @@ public class PanelController implements Initializable {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         TableColumn<FileInformation, String> fileDataColumn = new TableColumn<>("Last modified");
         fileDataColumn.setCellValueFactory(s -> new SimpleStringProperty(s.getValue().getLastModified().format(formatter)));
-        fileDataColumn.setPrefWidth(240);
+        fileDataColumn.setPrefWidth(120);
 
         table.getColumns().addAll(filenameColumn, fileTypeColumn, fileSizeColumn, fileDataColumn);
         table.getSortOrder().add(fileTypeColumn);
